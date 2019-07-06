@@ -13,27 +13,47 @@ $(function(){
     'use strict';
     this.$ = this.jQuery = jQuery.noConflict(true);
 
-    var part_iostyle = $($("#task-statement .io-style")[0]);
-    var part_example = $("#task-statement .part");
+    const part_iostyle = $($("#task-statement .io-style")[0]);
+    const part_example = $("#task-statement .part");
 
-    var all_input_text = "";
-    all_input_text = part_example.filter(function(i,elem){
-	const s = $($(elem).find("h3")[0]).text();
-        return /入力例/.test(s);
-    }).map(function(i,elem){
-        return $($(elem).find("pre")[0]).text();
-    }).get().join("\n");
+    const text_input =
+          part_example.filter(function(i,elem){
+              const s = $($(elem).find("h3")[0]).text();
+              return /入力例/.test(s);
+          }).map(function(i,elem){
+              return $($(elem).find("pre")[0]).text();
+          }).get().join("\n");
 
-    var all_output_text = "";
-    all_output_text = part_example.filter(function(i,elem){
-	const s = $($(elem).find("h3")[0]).text();
-        return /出力例/.test(s);
-    }).map(function(i,elem){
-        return $($(elem).find("pre")[0]).text();
-    }).get().join("\n");
+    const text_output =
+          part_example.filter(function(i,elem){
+              const s = $($(elem).find("h3")[0]).text();
+              return /出力例/.test(s);
+          }).map(function(i,elem){
+              return $($(elem).find("pre")[0]).text();
+          }).get().join("\n");
 
-    var pre_all_input = $("<pre></pre>", {style: "", text: all_input_text});
-    var pre_all_output = $("<pre></pre>", {style: "", text: all_output_text});
+    const pre_all_inputs = $("<pre></pre>", {
+        text: text_input
+    });
+    const pre_all_outputs = $("<pre></pre>", {
+        text: text_output
+    });
+
+    function copyExample(elem){
+        window.getSelection().removeAllRanges();
+        var range = document.createRange();
+        range.selectNode(elem);
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+
+        $(this).tooltip("show");
+        var _this = this;
+        setTimeout(function() {
+            $(_this).tooltip('hide');
+        }, 800);
+
+        window.getSelection().removeAllRanges();
+    }
 
     part_iostyle.after(
         $("<div></div>", {
@@ -49,19 +69,7 @@ $(function(){
                         "data-title": "Copied!",
                         on:{
                             click: function(){
-                                window.getSelection().removeAllRanges();
-                                var range = document.createRange();
-                                range.selectNode(pre_all_input.get(0));
-                                window.getSelection().addRange(range);
-                                document.execCommand('copy');
-
-                                $(this).tooltip("show");
-                                var _this = this;
-                                setTimeout(function() {
-                                    $(_this).tooltip('hide');
-                                }, 800);
-
-                                window.getSelection().removeAllRanges();
+                                copyExample.call(this, pre_all_inputs.get(0));
                             }
                         }
                     }),
@@ -73,25 +81,13 @@ $(function(){
                         "data-title": "Copied!",
                         on:{
                             click: function(){
-                                window.getSelection().removeAllRanges();
-                                var range = document.createRange();
-                                range.selectNode(pre_all_output.get(0));
-                                window.getSelection().addRange(range);
-                                document.execCommand('copy');
-
-                                $(this).tooltip("show");
-                                var _this = this;
-                                setTimeout(function() {
-                                    $(_this).tooltip('hide');
-                                }, 800);
-
-                                window.getSelection().removeAllRanges();
+                                copyExample.call(this, pre_all_outputs.get(0));
                             }
                         }
                     })
                 ),
-                pre_all_input,
-                pre_all_output
+                pre_all_inputs,
+                pre_all_outputs
             )
         )
     );
