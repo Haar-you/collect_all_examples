@@ -21,16 +21,16 @@ $(function(){
               const s = $($(elem).find("h3")[0]).text();
               return /入力例/.test(s);
           }).map(function(i,elem){
-              return $($(elem).find("pre")[0]).text();
-          }).get().join("\n");
+              return $(elem).find("pre")[0].innerText;
+          }).get().join("\n\n");
 
     const text_output =
           part_example.filter(function(i,elem){
               const s = $($(elem).find("h3")[0]).text();
               return /出力例/.test(s);
           }).map(function(i,elem){
-              return $($(elem).find("pre")[0]).text();
-          }).get().join("\n");
+              return $(elem).find("pre")[0].innerText;
+          }).get().join("\n\n");
 
     const pre_all_inputs = $("<pre></pre>", {
         text: text_input
