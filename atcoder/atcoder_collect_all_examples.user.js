@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         atcoder_collect_all_examples
 // @namespace    https://github.com/Haar-you
-// @version      1.0
+// @version      1.0.1
 // @description  入出力例をまとめた項目を生成
 // @author       Haar-you
 // @match        https://atcoder.jp/contests/*
