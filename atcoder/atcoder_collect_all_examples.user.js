@@ -13,82 +13,125 @@ $(function(){
     'use strict';
     this.$ = this.jQuery = jQuery.noConflict(true);
 
-    const part_iostyle = $($("#task-statement .io-style")[0]);
-    const part_example = $("#task-statement .part");
+    let examples_input = [];
+    let examples_output = [];
 
-    const text_input =
-          part_example.filter(function(i,elem){
-              const s = $($(elem).find("h3")[0]).text();
-              return /入力例/.test(s);
-          }).map(function(i,elem){
-              return $(elem).find("pre")[0].innerText;
-          }).get().join("\n\n");
+    getExamples(examples_input, examples_output);
 
-    const text_output =
-          part_example.filter(function(i,elem){
-              const s = $($(elem).find("h3")[0]).text();
-              return /出力例/.test(s);
-          }).map(function(i,elem){
-              return $(elem).find("pre")[0].innerText;
-          }).get().join("\n\n");
-
-    const pre_all_inputs = $("<pre></pre>", {
-        text: text_input
-    });
-    const pre_all_outputs = $("<pre></pre>", {
-        text: text_output
-    });
-
-    function copyExample(elem){
-        window.getSelection().removeAllRanges();
-        var range = document.createRange();
-        range.selectNode(elem);
-        window.getSelection().addRange(range);
-        document.execCommand('copy');
-
-        $(this).tooltip("show");
-        var _this = this;
-        setTimeout(function() {
-            $(_this).tooltip('hide');
-        }, 800);
-
-        window.getSelection().removeAllRanges();
-    }
-
-    part_iostyle.after(
-        $("<div></div>", {
-            "class": "part"
-        }).append(
-            $("<section></section>").append(
-                $("<h3></h3>", {text: "全入出力例 "}).append(
-                    $("<span></span>", {
-                        "class": "btn btn-default btn-sm",
-                        text: "Copy input",
-                        "data-toggle": "tooltip",
-                        "data-trigger": "manual",
-                        "data-title": "Copied!",
-                        on:{
-                            click: function(){
-                                copyExample.call(this, pre_all_inputs.get(0));
-                            }
+    const navbar = $("#contest-nav-tabs");
+    navbar.append(
+        $("<ul></ul>", {"class": "nav nav-tabs"}).append(
+            $("<li></li>").append(
+                $("<a></a>", {
+                    text: "Examples",
+                    href: "#",
+                    on: {
+                        click: function(){
+                            const win = window.open("", "_blank", "width=800, height=600");
+                            constructWindow(win, examples_input, examples_output);
                         }
-                    }),
-                    $("<span></span>", {
-                        "class": "btn btn-default btn-sm",
-                        text: "Copy output",
-                        "data-toggle": "tooltip",
-                        "data-trigger": "manual",
-                        "data-title": "Copied!",
-                        on:{
-                            click: function(){
-                                copyExample.call(this, pre_all_outputs.get(0));
-                            }
-                        }
-                    })
-                ),
-                pre_all_inputs,
-                pre_all_outputs
+                    }
+                })
             )
         )
     );
 });
+
+
+function constructWindow(win, examples_input, examples_output){
+    const style_pre = "display: block; margin: 0 0 10px; font-size: 13px; line-height: 1.42857143; word-break: break-all; word-wrap: break-word; color: #333; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 3px;";
+
+    const style_copy_button = "";
+
+    const pre_input =
+          $("<pre></pre>", {
+              style: style_pre,
+              text: examples_input.join("\n")
+          });
+
+    const pre_output =
+          $("<pre></pre>", {
+              style: style_pre,
+              text: examples_output.join("\n")
+          });
+
+    pre_input.css({
+        "width": "100%",
+    });
+
+    pre_output.css({
+        "width": "100%",
+    });
+
+    const problem_title = win.opener.document.title;
+    win.document.title = problem_title;
+    
+    $(win.document.body).append(
+        $("<div></div>", {
+            "class": "part"
+        }).append(
+            $("<section></section>").append(
+                $("<h3></h3>", {text: problem_title}),
+                $("<div></div>", {
+                    style: "width: 100%;"
+                }).append(
+                    $("<div></div>", {style: "display: inline-block; width: 45%;"}).append(
+                        $("<button></button>", {
+                            text: "Copy input",
+                            style: style_copy_button,
+                            on: {
+                                click: function(){
+                                    copyExample(win, pre_input.get(0));
+                                }
+                            }
+                        }),
+                        pre_input
+                    ),
+                    $("<div></div>", {style: "display: inline-block; width: 45%; float: right;"}).append(
+                        $("<button></button>", {
+                            text: "Copy output",
+                            style: style_copy_button,
+                            on: {
+                                click: function(){
+                                    copyExample(win, pre_output.get(0));
+                                }
+                            }
+                        }),
+                        pre_output
+                    )
+                )
+            )
+        )
+    );
+}
+
+
+function copyExample(win, elem){
+    win.getSelection().removeAllRanges();
+    const range = win.document.createRange();
+    range.selectNode(elem);
+    win.getSelection().addRange(range);
+    win.document.execCommand('copy');
+    win.getSelection().removeAllRanges();
+}
+
+
+function getExamples(examples_input, examples_output){
+    const part_iostyle = $($("#task-statement .io-style")[0]);
+    const part_example = $("#task-statement .part");
+
+    part_example.filter(function(i,elem){
+        const s = $($(elem).find("h3")[0]).text();
+        return /入力例/.test(s);
+    }).each(function(i,elem){
+        examples_input.push($(elem).find("pre")[0].innerText);
+    });
+
+    part_example.filter(function(i,elem){
+        const s = $($(elem).find("h3")[0]).text();
+        return /出力例/.test(s);
+    }).each(function(i,elem){
+        examples_output.push($(elem).find("pre")[0].innerText);
+        
+    });
+}
