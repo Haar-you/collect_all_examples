@@ -4,7 +4,7 @@
 // @version      1.0.1
 // @description  入出力例をまとめた項目を生成
 // @author       Haar-you
-// @match        https://atcoder.jp/contests/*
+// @match        https://atcoder.jp/contests/*/tasks/*
 // @grant        none
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js
 // ==/UserScript==
@@ -16,15 +16,13 @@ $(function(){
     let examples_input = [];
     let examples_output = [];
 
-    getExamples(examples_input, examples_output);
-
     const navbar = $("#contest-nav-tabs");
     navbar.append(
         $("<ul></ul>", {"class": "nav nav-tabs"}).append(
             $("<li></li>").append(
-                $("<a></a>", {
+                $("<button></button>", {
                     text: "Examples",
-                    href: "#",
+                    "class": "btn btn-link",
                     on: {
                         click: function(){
                             const win = window.open("", "_blank", "width=800, height=600");
@@ -35,6 +33,8 @@ $(function(){
             )
         )
     );
+
+    getExamples(examples_input, examples_output);
 });
 
 
@@ -70,6 +70,14 @@ function constructWindow(win, examples_input, examples_output){
         $("<div></div>", {
             "class": "part"
         }).append(
+            $("<button></button", {
+                text: "close",
+                on: {
+                    click: function(){
+                        win.close();
+                    }
+                }
+            }),
             $("<section></section>").append(
                 $("<h3></h3>", {text: problem_title}),
                 $("<div></div>", {
@@ -117,21 +125,19 @@ function copyExample(win, elem){
 
 
 function getExamples(examples_input, examples_output){
-    const part_iostyle = $($("#task-statement .io-style")[0]);
     const part_example = $("#task-statement .part");
 
-    part_example.filter(function(i,elem){
-        const s = $($(elem).find("h3")[0]).text();
-        return /入力例/.test(s);
-    }).each(function(i,elem){
-        examples_input.push($(elem).find("pre")[0].innerText);
-    });
+    part_example
+        .filter((i,elem) => {
+            const s = $($(elem).find("h3")[0]).text();
+            return /入力例/.test(s);
+        })
+        .each((i,elem) => {examples_input.push($(elem).find("pre")[0].innerText);});
 
-    part_example.filter(function(i,elem){
-        const s = $($(elem).find("h3")[0]).text();
-        return /出力例/.test(s);
-    }).each(function(i,elem){
-        examples_output.push($(elem).find("pre")[0].innerText);
-        
-    });
+    part_example
+        .filter(function(i,elem){
+            const s = $($(elem).find("h3")[0]).text();
+            return /出力例/.test(s);
+        })
+        .each((i,elem) => {examples_output.push($(elem).find("pre")[0].innerText);});
 }
