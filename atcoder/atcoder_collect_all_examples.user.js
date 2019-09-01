@@ -71,7 +71,7 @@ function constructWindow(win, examples_input, examples_output){
             "class": "part"
         }).append(
             $("<button></button", {
-                text: "close",
+                text: "close (ESC)",
                 on: {
                     click: function(){
                         win.close();
@@ -111,6 +111,12 @@ function constructWindow(win, examples_input, examples_output){
             )
         )
     );
+
+    $(win).keydown((e) => {
+        if(e.keyCode == 27){
+            win.close();
+        }
+    });
 }
 
 
@@ -125,6 +131,9 @@ function copyExample(win, elem){
 
 
 function getExamples(examples_input, examples_output){
+
+    
+    
     const part_example = $("#task-statement .part");
 
     part_example
