@@ -57,10 +57,12 @@ function constructWindow(win, examples_input, examples_output){
 
     pre_input.css({
         "width": "100%",
+        "white-space": "pre-wrap"
     });
 
     pre_output.css({
         "width": "100%",
+        "white-space": "pre-wrap"
     });
 
     const problem_title = win.opener.document.title;
