@@ -34,8 +34,66 @@ $(function(){
         )
     );
 
+
     getExamples(examples_input, examples_output);
+
+    createExampleItem(examples_input, examples_output);
 });
+
+function createExampleItem(examples_input, examples_output){
+    const pre_input =
+          $("<pre></pre>", {
+              style: "margin: 5px",
+              text: examples_input.join("\n")
+          });
+
+    const pre_output =
+          $("<pre></pre>", {
+              style: "margin: 5px",
+              text: examples_output.join("\n")
+          });
+
+    const part_iostyle = $($("#task-statement .io-style")[0]);
+
+    part_iostyle.after(
+        $("<div></div>", {
+            style: "background-color: #dd9999;",
+            "class": "part"
+        }).append(
+            $("<section></section>").append(
+                $("<h3></h3>", {text: "全入出力例 "}).append(
+                    $("<span></span>", {
+                        "class": "btn btn-default btn-sm",
+                        text: "Copy input",
+                        "data-toggle": "tooltip",
+                        "data-trigger": "manual",
+                        "data-title": "Copied!",
+                        on:{
+                            click: function(){
+                                copyExample2.call(this, window, pre_input.get(0));
+                            }
+                        }
+                    }),
+                    $("<span></span>", {
+                        "class": "btn btn-default btn-sm",
+                        text: "Copy output",
+                        "data-toggle": "tooltip",
+                        "data-trigger": "manual",
+                        "data-title": "Copied!",
+                        on:{
+                            click: function(){
+                                copyExample2.call(this, window, pre_output.get(0));
+                            }
+                        }
+                    })
+                ),
+                pre_input,
+                pre_output
+            )
+        )
+        
+    );
+}
 
 
 function constructWindow(win, examples_input, examples_output){
@@ -121,7 +179,6 @@ function constructWindow(win, examples_input, examples_output){
     });
 }
 
-
 function copyExample(win, elem){
     win.getSelection().removeAllRanges();
     const range = win.document.createRange();
@@ -131,11 +188,24 @@ function copyExample(win, elem){
     win.getSelection().removeAllRanges();
 }
 
+function copyExample2(win, elem){
+    win.getSelection().removeAllRanges();
+    const range = win.document.createRange();
+    range.selectNode(elem);
+    win.getSelection().addRange(range);
+    win.document.execCommand('copy');
+
+    $(this).tooltip("show");
+    var _this = this;
+    setTimeout(function() {
+        $(_this).tooltip('hide');
+    }, 800);
+    
+    win.getSelection().removeAllRanges();
+}
+
 
 function getExamples(examples_input, examples_output){
-
-    
-    
     const part_example = $("#task-statement .part");
 
     part_example
